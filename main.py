@@ -2,7 +2,10 @@ import os
 from openai import OpenAI
 import sys
 from pathlib import Path
-import configparser
+
+
+DEFAULT_ARTICLE_FILENAME = "Zadanie dla JJunior AI Developera - tresc artykulu.txt"
+
 
 def load_api_key():
     """Ładuje klucz API OpenAI z różnych źródeł w kolejności priorytetowej."""
@@ -27,7 +30,25 @@ def load_api_key():
 
     print("Błąd: Nie znaleziono klucza API OpenAI.")
     sys.exit(1)
+
+def get_input_filename():
+    """Wybór pliku zawierającego artykuł."""
+    if os.path.exists(DEFAULT_ARTICLE_FILENAME):
+        return DEFAULT_ARTICLE_FILENAME
     
+    print(f"\nDomyślny plik '{DEFAULT_ARTICLE_FILENAME}' nieznaleziony.")
+    while True:
+        user_filename = input("\nWprowadź ściezkę do pliku z artykułen (lub naciśnij Ctrl+C aby zrezygnować): ").strip()
+        
+        if not user_filename:
+            print("Nazwa pliku nie moze być pusta. Spróbuj jeszcze raz.")
+            continue
+            
+        if os.path.exists(user_filename):
+            return user_filename
+        else:
+            print(f"Plik '{user_filename}' nieznaleziony. Spróbuj jeszcze raz.")    
+
 def read_article(filename):
     """Odczytuje zawartość pliku tekstowego."""
     try:
@@ -108,8 +129,12 @@ def main():
     # Inicjalizacja klienta OpenAI
     client = OpenAI(api_key=api_key)
 
-    # Odczytaj artykuł
-    article_content = read_article('artykul.txt')
+    # Uzyskanie nazwy nazwy pliku wejściowego
+    input_filename = get_input_filename()
+    print(f"\nPrzetwarzany plik: {input_filename}")
+
+    # Wczytanie artykułu
+    article_content = read_article(input_filename)
 
     # Przetwórz artykuł z użyciem AI
     html_content = process_article_with_ai(client, article_content)
