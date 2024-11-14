@@ -23,6 +23,7 @@ def load_api_key():
                     return api_key
 
     # 3. Poproś użytkownika o wprowadzenie klucza
+    print("Nie znaleziono klucza API OpenAI. Wprowadź go manualnie.")
     api_key = input("Podaj swój klucz API OpenAI: ").strip()
     if api_key:
         return api_key
@@ -117,7 +118,6 @@ def process_article_with_ai(client, article_content):
             ],
             temperature=0.7
         )
-        print("\nPrzetwarzanie artykułu przez AI...")
         return response.choices[0].message.content
     except Exception as e:
         print(f"Wystąpił błąd podczas komunikacji z OpenAI API: {e} Upewnij się, że podałeś prawidłowy klucz API.")
@@ -135,7 +135,7 @@ def main():
 
         # Uzyskanie nazwy nazwy pliku wejściowego
         input_filename = get_input_filename()
-        print(f"\nPrzetwarzany plik: {input_filename}")
+        print(f"\nPrzetwarzany plik: '{input_filename}'")
 
         # Wczytanie artykułu
         article_content = read_article(input_filename)
@@ -144,12 +144,13 @@ def main():
             sys.exit(1)
         
         # Przetworzenie artykułu przez AI
+        print("\nPrzetwarzanie artykułu przez AI...")
         html_content = process_article_with_ai(client, article_content)
 
         # Zapisanie templatki HTML z artykułem
         output_filename = 'artykul.html'
         save_html(html_content, output_filename)
-        print(f"\nSukces! Artykuł został przetworzony i zapisany jako '{output_filename}'")
+        print(f"\033[92m\nSukces! Artykuł został przetworzony i zapisany jako '{output_filename}'\033[0m")
 
     except KeyboardInterrupt:
         print("\n\nOperacja anulowana przez uzytkownika.")
