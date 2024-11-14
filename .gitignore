@@ -1,3 +1,6 @@
+# Virtual environment
+oxido_rekrutacja_venv/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
