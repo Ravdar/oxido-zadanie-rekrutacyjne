@@ -3,7 +3,6 @@ from openai import OpenAI
 import sys
 from pathlib import Path
 
-
 DEFAULT_ARTICLE_FILENAME = "Zadanie dla JJunior AI Developera - tresc artykulu.txt"
 
 
@@ -51,15 +50,16 @@ def get_input_filename():
 
 def read_article(filename):
     """Odczytuje zawartość pliku tekstowego."""
-    try:
-        with open(filename, 'r', encoding='utf-8') as file:
-            return file.read()
-    except FileNotFoundError:
-        print(f"Błąd: Plik {filename} nie został znaleziony.")
-        sys.exit(1)
-    except Exception as e:
-        print(f"Wystąpił błąd podczas odczytu pliku: {e}")
-        sys.exit(1)
+    while True:
+        try:
+            with open(filename, 'r', encoding='utf-8') as file:
+                return file.read()
+        except FileNotFoundError:
+            print(f"Błąd: Plik {filename} nie został znaleziony.")
+            filename = input("Proszę podać poprawną nazwę pliku: ")
+        except Exception as e:
+            print(f"Wystąpił błąd podczas odczytu pliku: {e}")
+            sys.exit(1)
 
 def save_html(content, filename):
     """Zapisuje wygenerowany HTML do pliku."""
@@ -110,38 +110,53 @@ def process_article_with_ai(client, article_content):
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4",  # lub inny odpowiedni model
+            model="gpt-4",
             messages=[
-                {"role": "system", "content": "Jesteś ekspertem w tworzeniu semantycznego HTML5."},
+                {"role": "system", "content": "You are an expert in semantic HTML5 markup and content structure."},
                 {"role": "user", "content": prompt.format(article_content=article_content)}
             ],
             temperature=0.7
         )
+        print("\nPrzetwarzanie artykułu przez AI...")
         return response.choices[0].message.content
     except Exception as e:
-        print(f"Wystąpił błąd podczas komunikacji z OpenAI API: {e}")
+        print(f"Wystąpił błąd podczas komunikacji z OpenAI API: {e} Upewnij się, że podałeś prawidłowy klucz API.")
         sys.exit(1)
 
 def main():
-    # Załaduj klucz API
-    api_key = load_api_key()
+    try:
+        print(f"Article Processor - HTML Generator with AI\n")
+        
+        # Załaduj klucz API
+        api_key = load_api_key()
 
-    # Inicjalizacja klienta OpenAI
-    client = OpenAI(api_key=api_key)
+        # Inicjalizacja klienta OpenAI
+        client = OpenAI(api_key=api_key)
 
-    # Uzyskanie nazwy nazwy pliku wejściowego
-    input_filename = get_input_filename()
-    print(f"\nPrzetwarzany plik: {input_filename}")
+        # Uzyskanie nazwy nazwy pliku wejściowego
+        input_filename = get_input_filename()
+        print(f"\nPrzetwarzany plik: {input_filename}")
 
-    # Wczytanie artykułu
-    article_content = read_article(input_filename)
+        # Wczytanie artykułu
+        article_content = read_article(input_filename)
+        if not article_content:
+            print("Błąd: Plik jest pusty.")
+            sys.exit(1)
+        
+        # Przetworzenie artykułu przez AI
+        html_content = process_article_with_ai(client, article_content)
 
-    # Przetwórz artykuł z użyciem AI
-    html_content = process_article_with_ai(client, article_content)
+        # Zapisanie templatki HTML z artykułem
+        output_filename = 'artykul.html'
+        save_html(html_content, output_filename)
+        print(f"\nSukces! Artykuł został przetworzony i zapisany jako '{output_filename}'")
 
-    # Zapisz wynik
-    save_html(html_content, 'artykul.html')
-    print("Artykuł został pomyślnie przetworzony i zapisany jako artykul.html")
+    except KeyboardInterrupt:
+        print("\n\nOperacja anulowana przez uzytkownika.")
+        sys.exit(0)
+    except Exception as e:
+        print(f"\nWystąpił niespodziewany błąd: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
