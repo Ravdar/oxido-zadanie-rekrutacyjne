@@ -1,6 +1,44 @@
 import os
 from openai import OpenAI
 import sys
+from pathlib import Path
+import configparser
+
+def load_api_key():
+    """Ładuje klucz API OpenAI z różnych źródeł w kolejności priorytetowej."""
+    # 1. Sprawdź zmienną środowiskową
+    api_key = os.getenv('OPENAI_API_KEY')
+    if api_key:
+        return api_key
+
+    # 2. Sprawdź plik .env
+    env_path = Path('.env')
+    if env_path.exists():
+        with open(env_path) as f:
+            for line in f:
+                if line.startswith('OPENAI_API_KEY='):
+                    api_key = line.split('=')[1].strip().strip("'").strip('"')
+                    return api_key
+
+    # 3. Sprawdź plik config.ini
+    config = configparser.ConfigParser()
+    config_path = Path('config.ini')
+    if config_path.exists():
+        config.read('config.ini')
+        if 'OpenAI' in config and 'api_key' in config['OpenAI']:
+            return config['OpenAI']['api_key']
+
+    # 4. Poproś użytkownika o wprowadzenie klucza
+    api_key = input("Podaj swój klucz API OpenAI: ").strip()
+    if api_key:
+        # Zapisz klucz w config.ini dla przyszłego użycia
+        config['OpenAI'] = {'api_key': api_key}
+        with open('config.ini', 'w') as configfile:
+            config.write(configfile)
+        return api_key
+
+    print("Błąd: Nie znaleziono klucza API OpenAI.")
+    sys.exit(1)
 
 def read_article(filename):
     """Odczytuje zawartość pliku tekstowego."""
@@ -26,16 +64,37 @@ def save_html(content, filename):
 def process_article_with_ai(client, article_content):
     """Przetwarza artykuł używając OpenAI API."""
     prompt = """
-    Przekształć poniższy artykuł na kod HTML zgodnie z następującymi wytycznymi:
-    1. Użyj odpowiednich tagów HTML do strukturyzacji treści (np. article, section, h1, h2, p).
-    2. Zidentyfikuj miejsca, gdzie warto wstawić obrazy i dodaj tagi img z:
-       - src="image_placeholder.jpg"
-       - atrybutem alt zawierającym dokładny prompt do wygenerowania obrazu
-       - figcaption dla podpisu pod obrazem
-    3. Nie dodawaj tagów html, head, body ani żadnego CSS czy JavaScript.
-    4. Zachowaj oryginalną strukturę i hierarchię treści.
+    Transform the following article into HTML code according to these guidelines:
 
-    Oto artykuł do przetworzenia:
+    1. Use semantic HTML5 tags to properly structure the content, including but not limited to:
+       - article
+       - section
+       - header
+       - h1, h2, h3 (for proper heading hierarchy)
+       - p
+       - blockquote (for quotes if present)
+       - ul/ol for lists
+       - figure/figcaption for images
+
+    2. Identify strategic locations where images would enhance the content and add img tags with:
+       - src="image_placeholder.jpg"
+       - detailed alt attributes containing specific AI image generation prompts
+       - appropriate figcaption elements for image descriptions in the language of the article
+       - ensure each image placement serves a clear purpose in supporting the content
+
+    3. Important requirements:
+       - Do NOT include html, head, or body tags
+       - Do NOT add any CSS or JavaScript
+       - Do NOT include any external resources
+       - Focus on semantic structure and content organization
+
+    4. Additional considerations:
+       - Preserve the original content hierarchy
+       - Use appropriate HTML5 elements for content meaning
+       - Ensure logical flow of information
+       - Add descriptive alt texts that could serve as image AI generation prompts
+
+    Here's the article to process:
 
     {article_content}
     """
@@ -55,11 +114,8 @@ def process_article_with_ai(client, article_content):
         sys.exit(1)
 
 def main():
-    # Sprawdź czy klucz API jest ustawiony
-    api_key = os.getenv('OPENAI_API_KEY')
-    if not api_key:
-        print("Błąd: Nie znaleziono klucza API OpenAI. Ustaw zmienną środowiskową OPENAI_API_KEY.")
-        sys.exit(1)
+    # Załaduj klucz API
+    api_key = load_api_key()
 
     # Inicjalizacja klienta OpenAI
     client = OpenAI(api_key=api_key)
