@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Preview</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- Wklej artykuł w tym miejscu -->
+
+<style>
+
+body {background-color: whitesmoke;
+min-height: 100vh; display:flex;justify-content: center;padding-top: 50px;padding-bottom: 50px; padding-left: 25px;padding-bottom: 25px}
+
+article {
+    color: #2d3748;
+    max-width: 65ch;
+    font-size: 1.2rem;
+}
+
+article h1 {
+    font-size: 2.5em;
+    margin-bottom: 1em;
+    color: #1a202c;
+    font-weight: bold;
+}
+
+article h2 {
+    font-size: 2em;
+    margin: 1.5em 0 0.5em;
+    color: #2d3748;
+    font-weight: bold;
+}
+
+article h3 {
+    font-size: 1.5em;
+    margin: 1em 0 0.5em;
+    color: #4a5568;
+    font-weight: bold;
+}
+
+article p {
+    line-height: 1.9;
+    margin-bottom: 1.5em;
+    font-size: 18px;
+    font-family:serif;
+}
+
+article img {
+    max-width: 100%;
+    height: auto;
+    background-color: #f7fafc;
+}
+
+article figure {
+    margin: 2em 0;
+}
+
+article figcaption {
+    text-align: left;
+    color: #4a5568;
+    font-style: italic;
+    margin-top: 0.5em;
+}
+
+article blockquote {
+    margin: 1.5em 0;
+    padding: 1em 2em;
+    border-left: 4px solid #4a5568;
+    background-color: #f7fafc;
+    font-style: italic;
+}
+
+article ul, article ol {
+    margin: 1.5em 0;
+    padding-left: 2em;
+}
+
+article li {
+    margin-bottom: 0.5em;
+}
+
+footer{font-style: italic;color: grey;
+    font-family: monospace;
+    margin-top: 50px;}
+
+</style>
+
+<script>
+    // Function to find and style the word "Oxido" only in footer
+function highlightOxidoInFooter() {
+    const footer = document.querySelector('footer');
+    
+    // If no footer is found, exit the function
+    if (!footer) return;
+    
+    const targetWord = "Oxido";
+    const styledWord = `<span style="font-weight: bold; color: #004bc8;">${targetWord}</span>`;
+    
+    // Use regex with word boundaries to only match whole words
+    const regex = new RegExp(`\\b${targetWord}\\b`, 'g');
+    footer.innerHTML = footer.innerHTML.replace(regex, styledWord);
+}
+
+// Run the function when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', highlightOxidoInFooter);
+</script>
+
+</body>
+
+</html>
