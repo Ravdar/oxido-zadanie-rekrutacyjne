@@ -20,26 +20,14 @@ def load_api_key():
                     api_key = line.split('=')[1].strip().strip("'").strip('"')
                     return api_key
 
-    # 3. Sprawdź plik config.ini
-    config = configparser.ConfigParser()
-    config_path = Path('config.ini')
-    if config_path.exists():
-        config.read('config.ini')
-        if 'OpenAI' in config and 'api_key' in config['OpenAI']:
-            return config['OpenAI']['api_key']
-
-    # 4. Poproś użytkownika o wprowadzenie klucza
+    # 3. Poproś użytkownika o wprowadzenie klucza
     api_key = input("Podaj swój klucz API OpenAI: ").strip()
     if api_key:
-        # Zapisz klucz w config.ini dla przyszłego użycia
-        config['OpenAI'] = {'api_key': api_key}
-        with open('config.ini', 'w') as configfile:
-            config.write(configfile)
         return api_key
 
     print("Błąd: Nie znaleziono klucza API OpenAI.")
     sys.exit(1)
-
+    
 def read_article(filename):
     """Odczytuje zawartość pliku tekstowego."""
     try:
