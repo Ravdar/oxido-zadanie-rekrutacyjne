@@ -18,7 +18,7 @@ git clone https://github.com/Ravdar/oxido-zadanie-rekrutacyjne
 cd article-processor
 ```
 
-2. Zainstaluj wymagane zależności:
+2. Zainstaluj wymagane biblioteki:
 ```bash
 pip install -r requirements.txt
 ```
@@ -39,11 +39,11 @@ OPENAI_API_KEY=twój-klucz-api
 ```
 
 3. **Wprowadzenie ręczne**:
-Jeśli żaden z powyższych sposobów nie jest skonfigurowany, aplikacja poprosi o wprowadzenie klucza API manualnie.
+Jeśli żaden z powyższych sposobów nie jest skonfigurowany, aplikacja poprosi o manualne wprowadzenie klucza API.
 
 ## Użycie
 
-1. Umieść tekst artykułu w pliku `artykul.txt` w głównym katalogu projektu.
+1. Umieść tekst artykułu w pliku `Zadanie dla JJunior AI Developera - tresc artykulu.txt` w głównym katalogu projektu. Jeżeli plik nie zostanie znaleziony, aplikacja poprosi o ręczne wprowadzenie ścieżki. Pamiętaj aby umieścić ją w cudzysłowiu ("").
 
 2. Uruchom aplikację:
 ```bash
@@ -52,9 +52,15 @@ python main.py
 
 3. Wygenerowany kod HTML zostanie zapisany w pliku `artykul.html`.
 
+## Pozostałe funkcjonalności
+W repozytorium znajduje się także plik `szablon.html`, który służy do formatowania wygenerowanych artykułów. Aby uzyskać czytelny podgląd artykułu:
+
+1. Otwórz plik `szablon.html` w edytorze tekstu
+2. Wskazane miejsce w szablonie zastąp kodem z pliku `artykul.html`
+
+ Przykładowy widok sformatowanego artykułu można znaleźć w pliku `podglad.html`.
 
 ## Uwagi
 
 - Aplikacja używa modelu GPT-4 OpenAI. Możesz zmienić model w kodzie, modyfikując parametr `model` w funkcji `process_article_with_ai`.
 - Upewnij się, że masz wystarczające środki na koncie OpenAI do korzystania z API.
-- Wygenerowany kod HTML nie zawiera tagów `<html>`, `<head>` ani `<body>` - zawiera tylko zawartość do umieszczenia wewnątrz `<body>`.
